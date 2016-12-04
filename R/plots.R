@@ -15,8 +15,6 @@
 #' @export 
 plotMDS = function(mds, color=NULL, shape=NULL, polygon=NULL, title = "MDS", display.legend = TRUE){
 	
-	nref = NULL
-	
 	if (is.null(mds$points)) {stop(
         "mds$points must be a matrix of a MDS representation")}
     if (!is.null(color) && (length(color) != nrow(mds$points))) {
@@ -88,6 +86,9 @@ plotMDS = function(mds, color=NULL, shape=NULL, polygon=NULL, title = "MDS", dis
 		"filledtrianglepointupblue"=24,
 		"filledtrianglepointdownblue"=25)
     
+	nref = NULL
+	split = "_"
+	
     splitter = function(x, max){
         if (nchar(x) > max){
             paste0(substr(x,1,max),"\n",substr(x,max+1,nchar(x)))
