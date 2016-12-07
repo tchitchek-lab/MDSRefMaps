@@ -302,13 +302,13 @@ refproj = MDSProjection(ref, dist_refproj)
 plotMDS(refproj, polygon = aes_refproj$color[subset], title = "MDS Projection")
 ```
 
-<img src="README/unnamed-chunk-20-1.png" style="display: block; margin: auto;" />
+<img src="README/unnamed-chunk-21-1.png" style="display: block; margin: auto;" />
 
 
 
 The following figure shows the MDS Reference Map with different MDS Projections in regards to Regular isoMDS Representations.
 
-<img src="README/unnamed-chunk-22-1.png" style="display: block; margin: auto;" />
+<img src="README/unnamed-chunk-23-1.png" style="display: block; margin: auto;" />
 
 MDS Reference Map and MDS Projections representations compared to regular isoMDS representations constructed using transcriptomic profiles of blood samples from the Human Gene Expression - Global Map dataset (Lukk et al., 2010). This dataset consists on microarray transcriptomic profiles of various types of human samples collected from multiple public datasets. Transcriptomic profiles represented in this figure are extracted from human blood cell populations (leukocytes, monocytes, PBMC, B and T cells). Panels A and B respectively correspond to a MDS Reference Map and a regular isoMDS representation constructed with a set of profiles corresponding to samples that can serve as blood sample references in the subdataset. Panels C and E correspond to MDS Projections constructed with the MDS Reference Map and additional samples. Panels D and F correspond to regular isoMDS representations constructed with in the isoMDS function of the MASS R package.
 
@@ -341,7 +341,7 @@ ref = MDSReferenceMap(dist)
 plotMDS(ref, aes_ref$color, aes_ref$shape, aes_ref$color, title = "MDS Reference Map")
 ```
 
-<img src="README/unnamed-chunk-25-1.png" style="display: block; margin: auto;" />
+<img src="README/unnamed-chunk-26-1.png" style="display: block; margin: auto;" />
 
 
 
@@ -357,11 +357,11 @@ refproj = MDSProjection(ref, dist_refproj)
 plotMDS(refproj, polygon = aes_refproj$color[subset], title = "MDS Projection")
 ```
 
-<img src="README/unnamed-chunk-29-1.png" style="display: block; margin: auto;" />
+<img src="README/unnamed-chunk-30-1.png" style="display: block; margin: auto;" />
 
 The following figure shows the MDS Reference Map with different MDS Projections in regard to Regular isoMDS Representations.
 
-<img src="README/unnamed-chunk-30-1.png" style="display: block; margin: auto;" />
+<img src="README/unnamed-chunk-31-1.png" style="display: block; margin: auto;" />
 
 MDS Reference Map and MDS Projections representations compared to regular isoMDS representations constructed using transcriptomic profiles of blood samples from the Human Gene Expression - Global Map dataset (Lukk et al., 2010). This dataset consists on microarray transcriptomic profiles of various types of human samples collected from multiple public datasets. Transcriptomic profiles represented in this figure are extracted from tissue samples. Panels A and B respectively correspond to a MDS Reference Map and a regular isoMDS representation constructed with a set of profiles corresponding to samples that can serve as sample references in the subdataset. Panels C and E correspond to MDS Projections constructed with the MDS Reference Map and additional samples. Panels D and F correspond to regular isoMDS representations constructed with the reference and additional samples with the isoMDS function of the MASS R package.
 
