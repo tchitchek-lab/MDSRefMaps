@@ -397,7 +397,7 @@ ref = MDSReferenceMap(dist_ref)
 plotMDS(ref, color = aes_ref$color, shape = aes_ref$shape, title = "MDS Reference Map")
 ```
 
-<img src="README/monoclref-1.png" style="display: block; margin: auto;" />
+
 
 
 
@@ -412,7 +412,7 @@ plotMDS(refproj, color = aes_refproj$color[subset], title = "MDS Projection")
 
 
 
-<img src="README/monoclfull-1.png" style="display: block; margin: auto;" />
+
 
 A MDS Reference Map and MDS Projections representations compared to regular MDS representations constructed using mouse lung transcriptomic profiles from the MONOCL dataset (Josset et al., 2014). This dataset consists of RNA-seq transcriptomic profiles from mouse lungs infected by SARS (MA-15) or influenza (PR8) virus. This study was designed to identify long non-coding genes (~5,000 genes) associated with the host response to respiratory viruses and to annotated them based on the expression of known coding genes (~6,000 genes). A co-expression network has been constructed using the whole dataset of profiles and non-coding genes have been annotated based on the coding genes belonging to the same co-expression modules (labelled with different color names). Panels A and B correspond to a MDS Reference Map and a regular isoMDS representation constructed using the set of coding genes. Panels C, E, and G correspond to MDS Projections constructed using the coding genes of the MDS Reference Map and additional non-coding genes associated with different co-expression modules. Panels D, F and H correspond to regular isoMDS representations constructed using the coding genes of the MDS Reference Map and additional non-coding genes associated with different co-expression modules. MDS Projections shows that the non-coding genes and the coding genes belonging to the same co-expression modules have similar expression patterns and are positioned in the same locations. Regular isoMDS representations are more difficult to interpret as the coding-genes are not positioned at the same location in the different representations. 
 
