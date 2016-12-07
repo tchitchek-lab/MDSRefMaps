@@ -250,7 +250,7 @@ plotMDS(map_refproj, color = color, shape = shape, title = "MDS Projection")
 
 # <a name="visualization_in_vivo"/> 4. Case studies with transcriptomic datasets
 
-## <a name="hga_blood"/> 4.1 Case study with the Human Gene Expression - Global Map Atlas blood dataset
+## <a name="hga_blood"/> 4.1 Case study with the Human Gene Expression - Global Map blood dataset
 The Human Gene Expression - Global Map dataset [13] consists on more than 5,000 transcriptomic profiles obtained samples obtained from blood, brain or tissue human samples. 
 Those samples have been collected on different conditions and disease states.
 
@@ -260,12 +260,12 @@ This dataset can be loaded using the following commands:
 
 ```r
 # loads the HGE-GM blood dataset
-load("HGA-blood_refproj.Rdata")
+load("HGA-blood_data.Rdata")
 load("HGA-blood_aes.Rdata")
 
 # retrieves the expression data and aesthetics
-data_ref = data_HGA_BLOOD_ref
-data_refproj = data_HGA_BLOOD_refproj
+data_ref = HGA_BLOOD_data_ref
+data_refproj = HGA_BLOOD_data_refproj
 aes_ref = HGA_BLOOD_aes_ref
 aes_refproj = HGA_BLOOD_aes_refproj
 ```
@@ -299,9 +299,10 @@ data_refproj_subset = data_refproj[subset, ]
 # compute the ditance matrix and the MDS Projection
 dist_refproj = distEuclidean(as.matrix(data_refproj_subset))
 refproj = MDSProjection(ref, dist_refproj)
-plotMDS(refproj, nref = nrow(aes_ref), polygon = aes_refproj$color[subset], 
-    title = "MDS Projection")
+plotMDS(refproj, polygon = aes_refproj$color[subset], title = "MDS Projection")
 ```
+
+<img src="README/unnamed-chunk-20-1.png" style="display: block; margin: auto;" />
 
 
 
@@ -322,12 +323,12 @@ The dataset is loaded with the following lines:
 
 ```r
 # load the HGE-GM tissue dataset
-load("HGA-tissue_refproj.Rdata")
+load("HGA-tissue_data.Rdata")
 load("HGA-tissue_aes.Rdata")
 
 # retrieves the expression data and aesthetics
-data_ref = data_HGA_TISSUE_ref
-data_refproj = data_HGA_TISSUE_refproj
+data_ref = HGA_TISSUE_data_ref
+data_refproj = HGA_TISSUE_data_refproj
 aes_ref = HGA_TISSUE_aes_ref
 aes_refproj = HGA_TISSUE_aes_refproj
 ```
@@ -353,8 +354,7 @@ subset = which(aes_refproj["epidermis_GSE6932"] == 1)
 data_refproj_subset = data_refproj[subset, ]
 dist_refproj = distEuclidean(as.matrix(data_refproj_subset))
 refproj = MDSProjection(ref, dist_refproj)
-plotMDS(refproj, nref = nrow(aes_ref), polygon = aes_refproj$color[subset], 
-    title = "MDS Projection")
+plotMDS(refproj, polygon = aes_refproj$color[subset], title = "MDS Projection")
 ```
 
 <img src="README/unnamed-chunk-29-1.png" style="display: block; margin: auto;" />
@@ -380,7 +380,7 @@ This dataset can be loaded using the following commands:
 
 ```r
 # loads the MONOCL dataset
-load("./MONOCL_dist_refproj.Rdata")
+load("./MONOCL_dist.Rdata")
 load("./MONOCL_aes.Rdata")
 
 # retrives the distance matrices and aesthetics parameters
@@ -407,7 +407,7 @@ A MDS Projection, containing additional non-coding genes, can be generated using
 subset = which(aes_refproj["black"] == 1)
 dist_refproj_subset = dist_refproj[subset, subset]
 refproj = MDSProjection(ref, dist_refproj_subset)
-plotMDS(refproj, color = aes_refproj$color[subset], nref = nrow(dist_ref), title = "MDS Projection")
+plotMDS(refproj, color = aes_refproj$color[subset], title = "MDS Projection")
 ```
 
 
