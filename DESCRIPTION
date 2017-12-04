@@ -1,17 +1,14 @@
 Package: MDSRefMaps
 Type: Package
-Title: MDSRefMaps: an R Package for Multidimensional Scaling Reference Maps and Projections
-Version: 1.0.0
-Author: Francois BONNARDEL, Christophe BECAVIN and Nicolas TCHITCHEK
-Maintainer: Nicolas TCHITCHEK <nicolas.tchitchek@gmail.com> and Francois BONNARDEL <bonnardel.francois.bioinfo@gmail.com>
-Description: Multidimensional Scaling (MDS) methods aim to represent similarities between high-dimensional objects in a low dimensional space, generally in two or three dimensions for visualization purpose. MDS representations are especially useful to explore and interpret high-dimensional biological data. However, comparisons between the different MDS representations can be difficult because of the absence of a common structure. The MDSRefMaps algorithm allows the projection of additional high-dimensional objects over a predefined MDS representation. The predefined representations are named MDS Reference Maps and the overlaid representations are named MDS Projections. The MDSRefMaps algorithm is based on a molecular dynamics approach and has been implemented in C++ to handle large amount of objects. Moreover, the MDSRefMaps algorithm can handle both Euclidean and Manhattan distances and can also handle incomplete distance matrices (matrices with missing values).
-License: GPL-3 | file LICENSE
-Depends:
-    R (>= 3.1),
+Title: What the Package Does in One 'Title Case' Line
+Version: 1.0
+Date: 2017-01-17
+Author: Your Name
+Maintainer: Your Name <your@email.com>
+Description: One paragraph description of what the package does as one or more
+    full sentences.
+License: GPL (>= 2)
 Imports:
-    Rcpp (>= 0.12.4),
-    ggplot2,
-    plyr
-biocViews: DimensionReduction, Visualization, Transcriptomics
+    Rcpp (>= 0.12.8)
 LinkingTo: Rcpp
 RoxygenNote: 5.0.1

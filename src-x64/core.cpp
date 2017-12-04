@@ -1,6 +1,8 @@
 #include <Rcpp.h>
+#include <omp.h>
 #include <queue>
 using namespace Rcpp;
+// [[Rcpp::plugins(openmp)]]
 
 unsigned int ref_point = 0;
 double DIST_2 = 0;
@@ -110,6 +112,8 @@ BEGIN_RCPP
 END_RCPP
 }
 
+// Set environment variables
+// EXPORT
 void setCSpace(double K_value, double F_value, double MASS_value, double DELTA_T_value, double ACC_THRESHOLD_value){
     K = K_value;
     F = F_value;
@@ -126,15 +130,18 @@ void setCSpace(double K_value, double F_value, double MASS_value, double DELTA_T
 // EXPORT
 void distC_euclidean(NumericMatrix x, NumericMatrix dist) {
     
-    unsigned int outrows = x.nrow();
-    for (unsigned int i = 0; i < outrows - 1; i++) {
-        NumericVector row_i = x.row(i);
-        for (unsigned int j = i + 1; j < outrows; j ++) {
-            double d = sqrt(sum(pow(row_i-x.row(j), 2.0)));
+    unsigned int i, j, nrows = x.nrow();
+    double d;
+    
+    #pragma omp parallel for private (i,j,d) default(shared) collapse(1)
+    for (i = 0; i < nrows - 1; i++) {
+        for (j = i + 1; j < nrows; j ++) {
+            d = sqrt(sum(pow(x.row(i)-x.row(j), 2.0)));
             dist(j,i) = d;
             dist(i,j) = d;
         }
     }
+    
     return;
 }
 
@@ -142,11 +149,13 @@ void distC_euclidean(NumericMatrix x, NumericMatrix dist) {
 // EXPORT
 void distC_manhattan(NumericMatrix x, NumericMatrix dist) {
     
-    unsigned int outrows = x.nrow();
-    for (unsigned int i = 0; i < outrows - 1; i++) {
-        NumericVector row_i = x.row(i);
-        for (unsigned int j = i + 1; j < outrows; j ++) {
-            double d = sum(sqrt(pow(row_i-x.row(j), 2.0)));
+    unsigned int i, j, nrows = x.nrow();
+    double d;
+    
+    #pragma omp parallel for private (i,j,d) default(shared) collapse(1)
+    for (i = 0; i < nrows - 1; i++) {
+        for (j = i + 1; j < nrows; j ++) {
+            d = sum(sqrt(pow(x.row(i)-x.row(j), 2.0)));
             dist(j,i) = d;
             dist(i,j) = d;
         }
@@ -161,18 +170,19 @@ double computeC_stress(NumericMatrix dist1, NumericMatrix dist2) {
 
     double sum_diff_sq = 0.0;
 	double sum_i_sq    = 0.0;
-
     unsigned int nbrow = dist1.nrow();
+    unsigned int i,j;
 
-    for (unsigned int i = 0; i < nbrow - 1; i++) {
-        for (unsigned int j = i + 1; j < nbrow; j++) {
+    #pragma omp parallel for reduction(+:sum_diff_sq) reduction(+:sum_i_sq) private (i,j) collapse(1)
+    for (i = 0; i < nbrow - 1; i++) {
+        for (j = i + 1; j < nbrow; j++) {
             if (dist1(i,j) != dist1(i,j)){continue;}
             if (dist2(i,j) != dist2(i,j)){continue;}
             sum_diff_sq = sum_diff_sq + pow((dist2(i,j)-dist1(i,j)),2);
 			sum_i_sq    = sum_i_sq + pow(dist1(i,j),2);
         }
     }
-
+    
     return (sqrt(sum_diff_sq/sum_i_sq)*100);
 }
 
@@ -214,8 +224,11 @@ void setNMValues(NumericMatrix x, const NumericMatrix y){
     
     unsigned int nbrow = x.nrow();
     unsigned int nbcol = x.ncol();
-    for (unsigned int i = 0; i < nbrow; i++) {
-        for (unsigned int j = 0; j < nbcol; j++) {
+    unsigned int i,j;
+    
+    #pragma omp parallel for shared(x) private (i,j) collapse(1)
+    for (i = 0; i < nbrow; i++) {
+        for (j = 0; j < nbcol; j++) {
             x(i,j) = y(i,j);
         }
     }
@@ -229,9 +242,11 @@ void setDist2() {
     DIST_2 = 0;
 
     unsigned int nbrow = dist_initial.nrow();
-
-    for (unsigned int i = 0; i < nbrow - 1; i++) {
-        for (unsigned int j = i + 1; j < nbrow; j++) {
+    unsigned int i,j;
+    
+    #pragma omp parallel for private(i,j) reduction(+:DIST_2) collapse(1)
+    for (i = 0; i < nbrow - 1; i++) {
+        for (j = i + 1; j < nbrow; j++) {
             DIST_2 = DIST_2 + pow(dist_initial(i,j),2);
         }
     }
@@ -245,9 +260,11 @@ void NA_setDist2() {
     DIST_2 = 0;
 
     unsigned int nbrow = dist_initial.nrow();
+    unsigned int i,j;
 
-    for (unsigned int i = 0; i < nbrow - 1; i++) {
-        for (unsigned int j = i + 1; j < nbrow; j++) {
+    #pragma omp parallel for private(i,j) reduction(+:DIST_2) collapse(1)
+    for (i = 0; i < nbrow - 1; i++) {
+        for (j = i + 1; j < nbrow; j++) {
             if (dist_initial(i,j) != dist_initial(i,j)){continue;}
             DIST_2 = DIST_2 + pow(dist_initial(i,j),2);
         }
@@ -265,8 +282,11 @@ void compute_p_v_ACC_THRESHOLD() {
     
     unsigned int nbrow = positions.nrow();
     unsigned int nbcol = positions.ncol();
-    for (unsigned int i = ref_point; i < nbrow; i++) {
-        for (unsigned int j = 0; j < nbcol; j++) {
+    unsigned int i,j;
+    
+    #pragma omp parallel for shared(accelerations,positions,velocities,positions_prev) private (i,j,positions_tmp_value) collapse(1)
+    for (i = ref_point; i < nbrow; i++) {
+        for (j = 0; j < nbcol; j++) {
             if(accelerations(i,j) > max_acc) {
                 accelerations(i,j) = max_acc;
             }else if (accelerations(i,j) < min_acc) {
@@ -289,8 +309,11 @@ void compute_p_v() {
     
     unsigned int nbrow = positions.nrow();
     unsigned int nbcol = positions.ncol();
-    for (unsigned int i = ref_point; i < nbrow; i++) {
-        for (unsigned int j = 0; j < nbcol; j++) {
+    unsigned int i,j;
+    
+    #pragma omp parallel for shared(positions,velocities,positions_prev) private (i,j,positions_tmp_value) collapse(1)
+    for (i = ref_point; i < nbrow; i++) {
+        for (j = 0; j < nbcol; j++) {
             positions_tmp_value = positions(i,j);
             positions(i,j) = 2*positions(i,j)-positions_prev(i,j)+accelerations(i,j)*DELTA_T_2_DIV_MASS;
             velocities(i,j) = (positions(i,j)-positions_prev(i,j))/TWO_TIMES_DELTA_T;
@@ -304,24 +327,26 @@ void compute_p_v() {
 // Update the accelerations matrix based on the difference between the distance.
 double compute_stress_accel() {
 
-    double sum_diff_sq = 0;
+    double sum_diff_sq = 0, diff,force;
     accelerations = NumericMatrix(positions.nrow(),positions.ncol());
 
     unsigned int nbrow = positions.nrow();
-    unsigned int nbcol = positions.ncol();    
-
-    for (unsigned int i = 0; i < nbrow - 1; i++) {
-        unsigned int j = i;
+    unsigned int nbcol = positions.ncol();
+    unsigned int i,j,k;
+    
+    #pragma omp parallel for shared(accelerations) reduction(+:sum_diff_sq) private (i,j,diff,force)
+    for (i = 0; i < nbrow - 1; i++) {
+        j = i;
         while (j < ref_point) {
-            double diff = dist_current(i,j)-dist_initial(i,j);
+            diff = dist_current(i,j)-dist_initial(i,j);
             sum_diff_sq = sum_diff_sq + pow(diff,2);
             j++;
         }
         while (j < nbrow) {
-            double diff = dist_current(i,j)-dist_initial(i,j);
+            diff = dist_current(i,j)-dist_initial(i,j);
             sum_diff_sq = sum_diff_sq + pow(diff,2);
-            for (unsigned int k = 0; k < nbcol; k++) {
-                double force       = K*diff;
+            for (k = 0; k < nbcol; k++) {
+                force       = K*diff;
                 accelerations(i,k) = accelerations(i,k) + -force*(positions(i,k)-positions(j,k)) - F*velocities(i,k);
                 accelerations(j,k) = accelerations(j,k) + force*(positions(i,k)-positions(j,k)) - F*velocities(j,k);
             }
@@ -335,20 +360,22 @@ double compute_stress_accel() {
 // Skip NA Values. Update the accelerations matrix based on the difference between the distance.
 double NA_compute_stress_accel() {
 
-    double sum_diff_sq = 0;
+    double sum_diff_sq = 0, diff,force;
     accelerations = NumericMatrix(positions.nrow(),positions.ncol());
 
     unsigned int nbrow = positions.nrow();
-    unsigned int nbcol = positions.ncol();    
-
-    for (unsigned int i = 0; i < nbrow - 1; i++) {
-        unsigned int j = i;
+    unsigned int nbcol = positions.ncol(); 
+    unsigned int i,j,k;
+    
+    #pragma omp parallel for shared(accelerations) reduction(+:sum_diff_sq) private (i,j,diff,force)
+    for (i = 0; i < nbrow - 1; i++) {
+        j = i;
         while (j < ref_point) {
             if (dist_initial(i,j) != dist_initial(i,j)){
                 j++;
                 continue;
             }
-            double diff = dist_current(i,j)-dist_initial(i,j);
+            diff = dist_current(i,j)-dist_initial(i,j);
             sum_diff_sq = sum_diff_sq + pow(diff,2);
             j++;
         }
@@ -357,10 +384,10 @@ double NA_compute_stress_accel() {
                 j++;
                 continue;
             }
-            double diff = dist_current(i,j)-dist_initial(i,j);
+            diff = dist_current(i,j)-dist_initial(i,j);
             sum_diff_sq = sum_diff_sq + pow(diff,2);
-            for (unsigned int k = 0; k < nbcol; k++) {
-                double force       = K*diff;
+            for (k = 0; k < nbcol; k++) {
+                force       = K*diff;
                 accelerations(i,k) = accelerations(i,k) + -force*(positions(i,k)-positions(j,k)) - F*velocities(i,k);
                 accelerations(j,k) = accelerations(j,k) + force*(positions(i,k)-positions(j,k)) - F*velocities(j,k);
             }
@@ -403,15 +430,20 @@ void core(NumericMatrix positions_best, NumericVector stress_best, NumericMatrix
     unsigned int t = 1;
     while ((t < max_iterations)  &&  (sd_stress_stack > stress_stack_sd_th) ) {
     
-        if(verbose){
-            Rcout << "Step : " << t << " - stress : " << stress << " - sd : " << sd_stress_stack << std::endl;
-        }
+        if(verbose){ Rcout << "Step : " << t << " - stress : " << stress << " - sd : " << sd_stress_stack << std::endl;}
 
         if (ACC_THRESHOLD == 0) {compute_p_v();} else {compute_p_v_ACC_THRESHOLD();}
         
+        if(verbose){ Rcout << "    compute_p_v_ACC_THRESHOLD done" << std::endl;}
+        
         if (manhattan) {distC_manhattan(positions, dist_current);}else {distC_euclidean(positions, dist_current);}
         
+        if(verbose){ Rcout << "    distC done" << std::endl;}
+        
         stress = compute_stress_accel();
+        
+        if(verbose){ Rcout << "    compute_stress_accel done" << std::endl;}
+        
         stress_stack_queue.push(stress);
         
         if (t >= stress_stack_length) {
