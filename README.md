@@ -117,7 +117,7 @@ obj_ref2 = matrix(rnorm(n_obj * n_atr, 10, 2), n_obj, n_atr)
 dist_ref = dist(rbind(obj_ref1, obj_ref2))
 
 # generates a MDS Reference Map based on this distance matrix
-map_ref = MDSReferenceMap(dist_ref)
+map_ref = MDSReferenceMap(dist_ref,stress_sd_th = 0.001)
 ```
 
 The `MDSReferenceMap()` function returns a list of three elements:
@@ -260,7 +260,10 @@ This dataset can be loaded using the following commands:
 
 ```r
 # loads the HGE-GM blood dataset
+download.file("ftp://ftp.mdsrefmaps.org/public/HGA-blood_data.Rdata", "HGA-blood_data.rData")
 load("HGA-blood_data.Rdata")
+#if the file is corrupted, check the firewall or download the file manually
+download.file("ftp://ftp.mdsrefmaps.org/public/HGA-blood_aes.Rdata", "HGA-blood_aes.rData")
 load("HGA-blood_aes.Rdata")
 
 # retrieves the expression data and aesthetics
@@ -323,7 +326,10 @@ The dataset is loaded with the following lines:
 
 ```r
 # load the HGE-GM tissue dataset
+download.file("ftp://ftp.mdsrefmaps.org/public/HGA-TISSUE_data.Rdata", "HGA-tissue_data.rData")
 load("HGA-tissue_data.Rdata")
+#if the file is corrupted, check the firewall or download the file manually
+download.file("ftp://ftp.mdsrefmaps.org/public/HGA-TISSUE_aes.Rdata", "HGA-tissue_aes.rData")
 load("HGA-tissue_aes.Rdata")
 
 # retrieves the expression data and aesthetics
@@ -380,8 +386,11 @@ This dataset can be loaded using the following commands:
 
 ```r
 # loads the MONOCL dataset
-load("./MONOCL_dist.Rdata")
-load("./MONOCL_aes.Rdata")
+download.file("ftp://ftp.mdsrefmaps.org/public/MONOCL_dist.Rdata", "MONOCL_dist.rData")
+load("MONOCL_dist.Rdata")
+#if the file is corrupted, check the firewall or download the file manually
+download.file("ftp://ftp.mdsrefmaps.org/public/MONOCL_aes.Rdata", "MONOCL_aes.rData")
+load("MONOCL_aes.Rdata")
 
 # retrives the distance matrices and aesthetics parameters
 dist_ref = dist_MONOCL_ref
